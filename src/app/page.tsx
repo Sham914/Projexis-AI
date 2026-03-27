@@ -13,20 +13,20 @@ import { Input } from "@/components/ui/input";
 import { Check, Loader2, Sparkles, ChevronRight, Terminal, BookOpen, AlertCircle, SlidersHorizontal, Book, Heart } from "lucide-react";
 
 const DOMAINS = ["AI/ML", "Web Development", "Cybersecurity", "Data Science", "Mobile App Dev", "Cloud Computing", "IoT"];
-const SKILLS_POOL = ["Python", "TensorFlow", "PyTorch", "Scikit-Learn", "NLP", "Computer Vision", "Pandas", "NumPy", "HTML", "CSS", "JavaScript", "React", "Node.js", "Express", "MongoDB", "SQL", "Django", "Linux", "Networking", "Cryptography", "Ethical Hacking", "Bash", "Wireshark", "R", "Tableau", "PowerBI", "Machine Learning", "Statistics", "Flutter", "Dart", "Swift", "Kotlin", "Java", "React Native", "Firebase", "AWS", "Azure", "GCP", "Docker", "Kubernetes", "Terraform", "C++", "Raspberry Pi", "Arduino", "MQTT"];
-const SUBJECTS_POOL = ["Data Structures", "Algorithms", "Operating Systems", "Computer Networks", "DBMS", "Software Engineering", "Artificial Intelligence", "Machine Learning", "Data Science", "Cryptography", "Advanced Mathematics"];
-const INTERESTS_POOL = ["Open Source", "Research", "Product Development", "Programming", "Competitive Programming", "Hackathons"];
-const QUALIFICATIONS_POOL = ["B.Tech", "M.Tech", "BCA", "MCA", "B.Sc", "M.Sc", "Diploma", "B.E", "M.E"];
+const SKILLS_POOL = ["Python", "TensorFlow", "PyTorch", "Scikit-Learn", "NLP", "Computer Vision", "Pandas", "NumPy", "HTML", "CSS", "JavaScript", "React", "Node.js", "Express", "MongoDB", "SQL", "Django", "Linux", "Networking", "Cryptography", "Ethical Hacking", "Bash", "Wireshark", "R", "Tableau", "PowerBI", "Machine Learning", "Statistics", "Flutter", "Dart", "Swift", "Kotlin", "Java", "React Native", "Firebase", "AWS", "Azure", "GCP", "Docker", "Kubernetes", "Terraform", "C++", "Raspberry Pi", "Arduino", "MQTT", "Git", "GitHub", "GitLab", "Bitbucket", "C Programming", "Go", "Rust", "TypeScript", "Vue.js", "Svelte", "Tailwind CSS", "Redux", "PostgreSQL", "GraphQL", "Redis", "Spark", "Hadoop", "Jenkins", "Selenium", "Ansible", "Microservices"];
+const SUBJECTS_POOL = ["Data Structures", "Algorithms", "Operating Systems", "Computer Networks", "DBMS", "Software Engineering", "Artificial Intelligence", "Machine Learning", "Data Science", "Cryptography", "Advanced Mathematics", "Distributed Systems", "Computer Graphics", "Compiler Design", "Big Data Analytics", "Cloud Computing", "UI/UX Design", "Parallel Computing", "Human-Computer Interaction", "Theory of Computation"];
+const INTERESTS_POOL = ["Open Source", "Research", "Product Development", "Programming", "Competitive Programming", "Hackathons", "Entrepreneurship", "Game Development", "UI/UX Design", "Technical Writing", "Digital Marketing", "Fintech", "Sustainable Tech"];
+const QUALIFICATIONS_POOL = ["B.Tech", "M.Tech", "BCA", "MCA", "B.Sc", "M.Sc", "Diploma", "B.E", "M.E", "Higher Secondary"];
 
 export default function SkillooHome() {
   const [qual, setQual] = useState("B.Tech");
   const [year, setYear] = useState(3);
   const [domain, setDomain] = useState("AI/ML");
-  const [selectedSkills, setSelectedSkills] = useState<string[]>(["Python"]);
-  const [skillProficiency, setSkillProficiency] = useState<Record<string, number>>({ "Python": 3 });
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const [skillProficiency, setSkillProficiency] = useState<Record<string, number>>({});
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
-  
+
   const [loading, setLoading] = useState(false);
   const [projects, setProjects] = useState<any[]>([]);
 
@@ -55,7 +55,7 @@ export default function SkillooHome() {
   const submitProfile = async () => {
     setLoading(true);
     setProjects([]);
-    
+
     try {
       const res = await fetch("http://localhost:8000/api/recommend", {
         method: "POST",
@@ -83,7 +83,7 @@ export default function SkillooHome() {
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100 flex flex-col md:flex-row font-sans selection:bg-indigo-500/30">
       {/* Sidebar Form */}
-      <motion.div 
+      <motion.div
         initial={{ x: -200, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
@@ -96,7 +96,7 @@ export default function SkillooHome() {
 
         <div className="space-y-4">
           <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-500/80">Education Profile</h3>
-          
+
           <div className="space-y-2">
             <Label className="text-neutral-300">Qualification</Label>
             <Select value={qual} onValueChange={setQual}>
@@ -126,12 +126,24 @@ export default function SkillooHome() {
         <div className="w-full h-px bg-neutral-800/50 my-2"></div>
 
         <div className="space-y-4">
-          <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-500/80 flex items-center gap-2"><Terminal className="w-3 h-3"/> Technical Arsenal</h3>
+          <div className="flex justify-between items-center">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-500/80 flex items-center gap-2">
+              <Terminal className="w-3 h-3" /> Technical Arsenal
+            </h3>
+            {selectedSkills.length > 0 && (
+              <button
+                onClick={() => { setSelectedSkills([]); setSkillProficiency({}); }}
+                className="text-[10px] text-indigo-400/60 hover:text-indigo-400 uppercase font-bold tracking-tighter flex items-center gap-0.5 transition-colors"
+              >
+                Clear All
+              </button>
+            )}
+          </div>
           <Label className="text-neutral-300 text-sm">Select Your Top Skills</Label>
           <div className="flex flex-wrap gap-2 max-h-[160px] overflow-y-auto p-3 border border-neutral-800/80 rounded-xl bg-neutral-950/50 shadow-inner custom-scrollbar">
             {SKILLS_POOL.map(sk => (
-              <Badge 
-                key={sk} 
+              <Badge
+                key={sk}
                 variant={selectedSkills.includes(sk) ? "default" : "outline"}
                 className={`cursor-pointer transition-all px-2 py-1 font-medium ${selectedSkills.includes(sk) ? 'bg-indigo-600 hover:bg-indigo-500 text-white' : 'hover:bg-neutral-800 border-neutral-700 text-neutral-400'}`}
                 onClick={() => toggleSkill(sk)}
@@ -142,7 +154,7 @@ export default function SkillooHome() {
           </div>
 
           {selectedSkills.length > 0 && (
-            <motion.div 
+            <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               className="space-y-4 p-5 border border-indigo-500/30 rounded-2xl bg-indigo-950/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] backdrop-blur-sm"
@@ -154,7 +166,7 @@ export default function SkillooHome() {
                     <span className="text-neutral-200 font-medium group-hover:text-indigo-300 transition-colors">{sk}</span>
                     <span className="text-[10px] bg-indigo-500/20 text-indigo-400 px-1.5 py-0.5 rounded font-mono border border-indigo-500/20">Lvl {skillProficiency[sk] || 3}</span>
                   </div>
-                  <Slider min={1} max={5} step={1} value={[skillProficiency[sk] || 3]} onValueChange={(val) => setSkillProficiency({...skillProficiency, [sk]: val[0]})} className="cursor-pointer" />
+                  <Slider min={1} max={5} step={1} value={[skillProficiency[sk] || 3]} onValueChange={(val) => setSkillProficiency({ ...skillProficiency, [sk]: val[0] })} className="cursor-pointer" />
                 </div>
               ))}
             </motion.div>
@@ -164,11 +176,23 @@ export default function SkillooHome() {
         <div className="w-full h-px bg-neutral-800/50 my-2"></div>
 
         <div className="space-y-4">
-          <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-500/80 flex items-center gap-2"><Book className="w-3 h-3"/> Academic Foundations</h3>
+          <div className="flex justify-between items-center">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-500/80 flex items-center gap-2">
+              <Book className="w-3 h-3" /> Academic Foundations
+            </h3>
+            {selectedSubjects.length > 0 && (
+              <button
+                onClick={() => setSelectedSubjects([])}
+                className="text-[10px] text-cyan-400/60 hover:text-cyan-400 uppercase font-bold tracking-tighter flex items-center gap-0.5 transition-colors"
+              >
+                Clear
+              </button>
+            )}
+          </div>
           <div className="flex flex-wrap gap-2">
             {SUBJECTS_POOL.map(sub => (
-              <Badge 
-                key={sub} 
+              <Badge
+                key={sub}
                 variant={selectedSubjects.includes(sub) ? "default" : "outline"}
                 className={`cursor-pointer transition-all px-2 py-1 text-xs ${selectedSubjects.includes(sub) ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'hover:bg-neutral-800 border-neutral-700 text-neutral-400'}`}
                 onClick={() => toggleSubject(sub)}
@@ -180,11 +204,23 @@ export default function SkillooHome() {
         </div>
 
         <div className="space-y-4">
-          <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-500/80 flex items-center gap-2"><Heart className="w-3 h-3"/> Core Interests</h3>
+          <div className="flex justify-between items-center">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-500/80 flex items-center gap-2">
+              <Heart className="w-3 h-3" /> Core Interests
+            </h3>
+            {selectedInterests.length > 0 && (
+              <button
+                onClick={() => setSelectedInterests([])}
+                className="text-[10px] text-emerald-400/60 hover:text-emerald-400 uppercase font-bold tracking-tighter flex items-center gap-0.5 transition-colors"
+              >
+                Clear
+              </button>
+            )}
+          </div>
           <div className="flex flex-wrap gap-2">
             {INTERESTS_POOL.map(int => (
-              <Badge 
-                key={int} 
+              <Badge
+                key={int}
                 variant={selectedInterests.includes(int) ? "default" : "outline"}
                 className={`cursor-pointer transition-all px-2 py-1 text-xs ${selectedInterests.includes(int) ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'hover:bg-neutral-800 border-neutral-700 text-neutral-400'}`}
                 onClick={() => toggleInterest(int)}
@@ -195,7 +231,7 @@ export default function SkillooHome() {
           </div>
         </div>
 
-        <Button 
+        <Button
           className="w-full mt-4 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white shadow-[0_0_30px_rgba(79,70,229,0.2)] hover:shadow-[0_0_40px_rgba(79,70,229,0.4)] transition-all flex items-center gap-2 h-14 text-lg font-semibold rounded-xl border border-indigo-500/30"
           onClick={submitProfile}
           disabled={loading || selectedSkills.length === 0}
@@ -208,10 +244,10 @@ export default function SkillooHome() {
       {/* Main Content Area */}
       <div className="flex-1 p-8 md:p-14 overflow-y-auto bg-[url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E')] relative isolate">
         <div className="absolute inset-0 bg-neutral-950 opacity-[0.97] -z-10"></div>
-        
+
         <div className="w-full max-w-6xl mx-auto">
           {!loading && projects.length === 0 && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
               className="flex flex-col items-center justify-center h-[60vh] text-center"
             >
@@ -225,7 +261,7 @@ export default function SkillooHome() {
 
           <AnimatePresence>
             {loading && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 className="flex flex-col items-center justify-center h-[50vh] gap-4"
               >
@@ -236,7 +272,7 @@ export default function SkillooHome() {
                 <p className="text-indigo-400 font-mono text-sm tracking-widest uppercase animate-pulse">Running Neural Inference...</p>
               </motion.div>
             )}
-            
+
             {!loading && projects.map((p, i) => (
               <motion.div
                 key={p.id}
@@ -247,7 +283,7 @@ export default function SkillooHome() {
               >
                 <Card className="bg-neutral-900/60 border-neutral-800 backdrop-blur-xl shadow-2xl overflow-hidden group">
                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  
+
                   <CardHeader className="pb-4">
                     <div className="flex justify-between items-start mb-2">
                       <Badge variant="outline" className="bg-indigo-500/10 text-indigo-400 border-indigo-500/20 font-mono">
@@ -258,13 +294,13 @@ export default function SkillooHome() {
                     <CardTitle className="text-2xl font-bold tracking-tight text-neutral-100 mb-1">{p.title}</CardTitle>
                     <CardDescription className="text-neutral-400 text-base flex flex-col gap-3 mt-4">
                       <div className="bg-neutral-950/50 p-4 rounded-lg border border-neutral-800/80">
-                        <span className="text-indigo-400 font-semibold mb-1 flex items-center gap-2"><Sparkles className="w-4 h-4"/> AI Rationale</span>
+                        <span className="text-indigo-400 font-semibold mb-1 flex items-center gap-2"><Sparkles className="w-4 h-4" /> AI Rationale</span>
                         <p className="text-neutral-300">{p.explanation}</p>
                       </div>
                       <p>{p.description}</p>
                     </CardDescription>
                   </CardHeader>
-                  
+
                   <CardContent>
                     <div className="mb-6">
                       <h4 className="text-sm font-semibold text-neutral-500 mb-3 uppercase tracking-wider">Required Technical Stack</h4>
@@ -302,7 +338,7 @@ export default function SkillooHome() {
                           </ol>
                         </AccordionContent>
                       </AccordionItem>
-                      
+
                       <AccordionItem value="gaps" className="border-neutral-800 border-b-0">
                         <AccordionTrigger className="hover:no-underline text-neutral-300 hover:text-rose-400 transition-colors">
                           <span className="flex items-center gap-2"><AlertCircle className="w-4 h-4" /> Required Knowledge Gaps to Bridge</span>
