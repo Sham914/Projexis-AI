@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Skilloo AI",
+  title: "Projexis AI",
   description: "AI Powered Project Recommendation System",
 };
 

@@ -18,7 +18,7 @@ const SUBJECTS_POOL = ["Data Structures", "Algorithms", "Operating Systems", "Co
 const INTERESTS_POOL = ["Open Source", "Research", "Product Development", "Programming", "Competitive Programming", "Hackathons", "Entrepreneurship", "Game Development", "UI/UX Design", "Technical Writing", "Digital Marketing", "Fintech", "Sustainable Tech"];
 const QUALIFICATIONS_POOL = ["B.Tech", "M.Tech", "BCA", "MCA", "B.Sc", "M.Sc", "Diploma", "B.E", "M.E", "Higher Secondary"];
 
-export default function SkillooHome() {
+export default function ProjexisHome() {
   const [qual, setQual] = useState("B.Tech");
   const [year, setYear] = useState(3);
   const [domain, setDomain] = useState("AI/ML");
@@ -91,7 +91,7 @@ export default function SkillooHome() {
       >
         <div className="flex items-center gap-2 mb-2">
           <Sparkles className="text-indigo-400 w-7 h-7" />
-          <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Skilloo AI</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Projexis AI</h1>
         </div>
 
         <div className="space-y-4">
