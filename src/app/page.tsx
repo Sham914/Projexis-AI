@@ -10,33 +10,52 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
-import { Check, Loader2, Sparkles, ChevronRight, Terminal, BookOpen, AlertCircle } from "lucide-react";
+import { Check, Loader2, Sparkles, ChevronRight, Terminal, BookOpen, AlertCircle, SlidersHorizontal, Book, Heart } from "lucide-react";
 
 const DOMAINS = ["AI/ML", "Web Development", "Cybersecurity", "Data Science", "Mobile App Dev", "Cloud Computing", "IoT"];
 const SKILLS_POOL = ["Python", "TensorFlow", "PyTorch", "Scikit-Learn", "NLP", "Pandas", "NumPy", "HTML", "CSS", "JavaScript", "React", "Node.js", "Express", "MongoDB", "SQL", "Django", "Linux", "Networking", "Cryptography", "Ethical Hacking", "Bash", "R", "Machine Learning", "Statistics", "Flutter", "Swift", "Kotlin", "Java", "Docker", "Kubernetes", "AWS", "C++", "Raspberry Pi"];
-const SUBJECTS_POOL = ["Data Structures", "Algorithms", "Operating Systems", "Computer Networks", "DBMS", "Software Engineering"];
+const SUBJECTS_POOL = ["Data Structures", "Algorithms", "Operating Systems", "Computer Networks", "DBMS", "Software Engineering", "Artificial Intelligence", "Machine Learning", "Data Science", "Cryptography", "Advanced Mathematics"];
+const INTERESTS_POOL = ["Open Source", "Research", "Product Development", "Programming", "Competitive Programming", "Hackathons"];
+const QUALIFICATIONS_POOL = ["B.Tech", "M.Tech", "BCA", "MCA", "B.Sc", "M.Sc", "Diploma", "B.E", "M.E"];
 
 export default function SkillooHome() {
   const [qual, setQual] = useState("B.Tech");
   const [year, setYear] = useState(3);
   const [domain, setDomain] = useState("AI/ML");
   const [selectedSkills, setSelectedSkills] = useState<string[]>(["Python"]);
+  const [skillProficiency, setSkillProficiency] = useState<Record<string, number>>({ "Python": 3 });
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   
   const [loading, setLoading] = useState(false);
   const [projects, setProjects] = useState<any[]>([]);
 
-  // Simple multi-select mock for UI (Native select in shadcn doesn't do arrays natively without extra packages easily, so we use checkboxes or simple buttons)
   const toggleSkill = (sk: string) => {
-    if (selectedSkills.includes(sk)) setSelectedSkills(selectedSkills.filter(s => s !== sk));
-    else setSelectedSkills([...selectedSkills, sk]);
+    if (selectedSkills.includes(sk)) {
+      setSelectedSkills(selectedSkills.filter(s => s !== sk));
+      const newProf = { ...skillProficiency };
+      delete newProf[sk];
+      setSkillProficiency(newProf);
+    } else {
+      setSelectedSkills([...selectedSkills, sk]);
+      setSkillProficiency({ ...skillProficiency, [sk]: 3 });
+    }
+  };
+
+  const toggleSubject = (sub: string) => {
+    if (selectedSubjects.includes(sub)) setSelectedSubjects(selectedSubjects.filter(s => s !== sub));
+    else setSelectedSubjects([...selectedSubjects, sub]);
+  };
+
+  const toggleInterest = (int: string) => {
+    if (selectedInterests.includes(int)) setSelectedInterests(selectedInterests.filter(i => i !== int));
+    else setSelectedInterests([...selectedInterests, int]);
   };
 
   const submitProfile = async () => {
     setLoading(true);
     setProjects([]);
     
-    // In a real app we'd map all fields properly. Let's send what we have.
     try {
       const res = await fetch("http://localhost:8000/api/recommend", {
         method: "POST",
@@ -46,9 +65,9 @@ export default function SkillooHome() {
           year: year,
           preferred_domain: domain,
           skills: selectedSkills,
-          skill_proficiency: {},
+          skill_proficiency: skillProficiency,
           subjects: selectedSubjects,
-          interests: []
+          interests: selectedInterests
         })
       });
       const data = await res.json();
@@ -65,64 +84,112 @@ export default function SkillooHome() {
     <div className="min-h-screen bg-neutral-950 text-neutral-100 flex flex-col md:flex-row font-sans selection:bg-indigo-500/30">
       {/* Sidebar Form */}
       <motion.div 
-        initial={{ x: -300, opacity: 0 }}
+        initial={{ x: -200, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="w-full md:w-[400px] border-r border-neutral-800 bg-neutral-900/50 p-6 flex flex-col gap-6 overflow-y-auto z-10 sticky top-0 md:h-screen shadow-2xl"
+        className="w-full md:w-[380px] border-r border-neutral-800/80 bg-neutral-900/40 p-8 flex flex-col gap-6 overflow-y-auto z-10 sticky top-0 md:h-screen shadow-[4px_0_24px_rgba(0,0,0,0.5)] backdrop-blur-xl custom-scrollbar"
       >
         <div className="flex items-center gap-2 mb-2">
-          <Sparkles className="text-indigo-400 w-6 h-6" />
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">Skilloo AI</h1>
+          <Sparkles className="text-indigo-400 w-7 h-7" />
+          <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Skilloo AI</h1>
         </div>
 
         <div className="space-y-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-neutral-500">Education Profile</h3>
+          <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-500/80">Education Profile</h3>
           
           <div className="space-y-2">
-            <Label>Qualification</Label>
+            <Label className="text-neutral-300">Qualification</Label>
             <Select value={qual} onValueChange={setQual}>
-              <SelectTrigger className="bg-neutral-800/50 border-neutral-700"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {["B.Tech", "M.Tech", "BCA", "MCA", "B.Sc"].map(q => <SelectItem key={q} value={q}>{q}</SelectItem>)}
+              <SelectTrigger className="bg-neutral-950/50 border-neutral-800 hover:border-indigo-500/50 transition-colors h-11 text-md ring-offset-neutral-950 focus:ring-indigo-500"><SelectValue /></SelectTrigger>
+              <SelectContent className="bg-neutral-900 border-neutral-800 text-neutral-200">
+                {QUALIFICATIONS_POOL.map(q => <SelectItem key={q} value={q} className="focus:bg-indigo-500/20">{q}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <div className="flex justify-between"><Label>Year of Study</Label><span className="text-xs text-neutral-400">Year {year}</span></div>
-            <Slider min={1} max={4} step={1} value={[year]} onValueChange={(val) => setYear(val[0])} className="py-2" />
+          <div className="space-y-3 pt-2">
+            <div className="flex justify-between"><Label className="text-neutral-300">Year of Study</Label><span className="text-xs text-indigo-400 font-mono">Year {year}</span></div>
+            <Slider min={1} max={4} step={1} value={[year]} onValueChange={(val) => setYear(val[0])} className="py-2 cursor-pointer" />
           </div>
 
-          <div className="space-y-2">
-            <Label>Preferred Domain</Label>
+          <div className="space-y-2 pt-2">
+            <Label className="text-neutral-300">Preferred Domain</Label>
             <Select value={domain} onValueChange={setDomain}>
-              <SelectTrigger className="bg-neutral-800/50 border-neutral-700"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {DOMAINS.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+              <SelectTrigger className="bg-neutral-950/50 border-neutral-800 hover:border-cyan-400/50 transition-colors h-11 text-md ring-offset-neutral-950 focus:ring-cyan-400"><SelectValue /></SelectTrigger>
+              <SelectContent className="bg-neutral-900 border-neutral-800 text-neutral-200">
+                {DOMAINS.map(d => <SelectItem key={d} value={d} className="focus:bg-cyan-500/20">{d}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
         </div>
 
-        <div className="space-y-4 mt-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-neutral-500">Technical Arsenal</h3>
-          <Label>Select Your Top Skills</Label>
-          <div className="flex flex-wrap gap-2 max-h-[200px] overflow-y-auto p-2 border border-neutral-800 rounded-md bg-neutral-950/30">
-            {SKILLS_POOL.slice(0, 15).map(sk => (
+        <div className="w-full h-px bg-neutral-800/50 my-2"></div>
+
+        <div className="space-y-4">
+          <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-500/80 flex items-center gap-2"><Terminal className="w-3 h-3"/> Technical Arsenal</h3>
+          <Label className="text-neutral-300 text-sm">Select Your Top Skills</Label>
+          <div className="flex flex-wrap gap-2 max-h-[160px] overflow-y-auto p-3 border border-neutral-800/80 rounded-xl bg-neutral-950/50 shadow-inner">
+            {SKILLS_POOL.slice(0, 20).map(sk => (
               <Badge 
                 key={sk} 
                 variant={selectedSkills.includes(sk) ? "default" : "outline"}
-                className={`cursor-pointer transition-all ${selectedSkills.includes(sk) ? 'bg-indigo-600 hover:bg-indigo-700' : 'hover:bg-neutral-800 border-neutral-700 text-neutral-400'}`}
+                className={`cursor-pointer transition-all px-2 py-1 font-medium ${selectedSkills.includes(sk) ? 'bg-indigo-600 hover:bg-indigo-500 text-white' : 'hover:bg-neutral-800 border-neutral-700 text-neutral-400'}`}
                 onClick={() => toggleSkill(sk)}
               >
                 {sk}
               </Badge>
             ))}
           </div>
+
+          {selectedSkills.length > 0 && (
+            <div className="space-y-3 p-4 border border-indigo-500/20 rounded-xl bg-indigo-950/10">
+              <Label className="text-indigo-300 text-xs uppercase flex items-center gap-1"><SlidersHorizontal className="w-3 h-3" /> Adjust Proficiency</Label>
+              {selectedSkills.map(sk => (
+                <div key={sk} className="space-y-1">
+                  <div className="flex justify-between text-xs"><span className="text-neutral-300">{sk}</span><span className="text-neutral-500 font-mono">Lvl {skillProficiency[sk] || 3}</span></div>
+                  <Slider min={1} max={5} step={1} value={[skillProficiency[sk] || 3]} onValueChange={(val) => setSkillProficiency({...skillProficiency, [sk]: val[0]})} className="cursor-pointer" />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="w-full h-px bg-neutral-800/50 my-2"></div>
+
+        <div className="space-y-4">
+          <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-500/80 flex items-center gap-2"><Book className="w-3 h-3"/> Academic Foundations</h3>
+          <div className="flex flex-wrap gap-2">
+            {SUBJECTS_POOL.map(sub => (
+              <Badge 
+                key={sub} 
+                variant={selectedSubjects.includes(sub) ? "default" : "outline"}
+                className={`cursor-pointer transition-all px-2 py-1 text-xs ${selectedSubjects.includes(sub) ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'hover:bg-neutral-800 border-neutral-700 text-neutral-400'}`}
+                onClick={() => toggleSubject(sub)}
+              >
+                {sub}
+              </Badge>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-500/80 flex items-center gap-2"><Heart className="w-3 h-3"/> Core Interests</h3>
+          <div className="flex flex-wrap gap-2">
+            {INTERESTS_POOL.map(int => (
+              <Badge 
+                key={int} 
+                variant={selectedInterests.includes(int) ? "default" : "outline"}
+                className={`cursor-pointer transition-all px-2 py-1 text-xs ${selectedInterests.includes(int) ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'hover:bg-neutral-800 border-neutral-700 text-neutral-400'}`}
+                onClick={() => toggleInterest(int)}
+              >
+                {int}
+              </Badge>
+            ))}
+          </div>
         </div>
 
         <Button 
-          className="w-full mt-6 bg-indigo-600 hover:bg-indigo-700 text-white shadow-[0_0_20px_rgba(79,70,229,0.3)] transition-all flex items-center gap-2 h-12 text-md rounded-xl"
+          className="w-full mt-4 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white shadow-[0_0_30px_rgba(79,70,229,0.2)] hover:shadow-[0_0_40px_rgba(79,70,229,0.4)] transition-all flex items-center gap-2 h-14 text-lg font-semibold rounded-xl border border-indigo-500/30"
           onClick={submitProfile}
           disabled={loading || selectedSkills.length === 0}
         >
@@ -132,10 +199,10 @@ export default function SkillooHome() {
       </motion.div>
 
       {/* Main Content Area */}
-      <div className="flex-1 p-8 md:p-12 overflow-y-auto bg-[url('https://grainy-gradients.vercel.app/noise.svg')] relative">
-        <div className="absolute inset-0 bg-neutral-950 opacity-90 -z-10 mix-blend-multiply"></div>
+      <div className="flex-1 p-8 md:p-14 overflow-y-auto bg-[url('https://grainy-gradients.vercel.app/noise.svg')] relative">
+        <div className="absolute inset-0 bg-neutral-950 opacity-95 -z-10 mix-blend-multiply"></div>
         
-        <div className="max-w-4xl mx-auto">
+        <div className="w-full max-w-6xl mx-auto">
           {!loading && projects.length === 0 && (
             <motion.div 
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
