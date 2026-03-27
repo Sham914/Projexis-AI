@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Check, Loader2, Sparkles, ChevronRight, Terminal, BookOpen, AlertCircle, SlidersHorizontal, Book, Heart } from "lucide-react";
 
 const DOMAINS = ["AI/ML", "Web Development", "Cybersecurity", "Data Science", "Mobile App Dev", "Cloud Computing", "IoT"];
-const SKILLS_POOL = ["Python", "TensorFlow", "PyTorch", "Scikit-Learn", "NLP", "Pandas", "NumPy", "HTML", "CSS", "JavaScript", "React", "Node.js", "Express", "MongoDB", "SQL", "Django", "Linux", "Networking", "Cryptography", "Ethical Hacking", "Bash", "R", "Machine Learning", "Statistics", "Flutter", "Swift", "Kotlin", "Java", "Docker", "Kubernetes", "AWS", "C++", "Raspberry Pi"];
+const SKILLS_POOL = ["Python", "TensorFlow", "PyTorch", "Scikit-Learn", "NLP", "Computer Vision", "Pandas", "NumPy", "HTML", "CSS", "JavaScript", "React", "Node.js", "Express", "MongoDB", "SQL", "Django", "Linux", "Networking", "Cryptography", "Ethical Hacking", "Bash", "Wireshark", "R", "Tableau", "PowerBI", "Machine Learning", "Statistics", "Flutter", "Dart", "Swift", "Kotlin", "Java", "React Native", "Firebase", "AWS", "Azure", "GCP", "Docker", "Kubernetes", "Terraform", "C++", "Raspberry Pi", "Arduino", "MQTT"];
 const SUBJECTS_POOL = ["Data Structures", "Algorithms", "Operating Systems", "Computer Networks", "DBMS", "Software Engineering", "Artificial Intelligence", "Machine Learning", "Data Science", "Cryptography", "Advanced Mathematics"];
 const INTERESTS_POOL = ["Open Source", "Research", "Product Development", "Programming", "Competitive Programming", "Hackathons"];
 const QUALIFICATIONS_POOL = ["B.Tech", "M.Tech", "BCA", "MCA", "B.Sc", "M.Sc", "Diploma", "B.E", "M.E"];
@@ -128,8 +128,8 @@ export default function SkillooHome() {
         <div className="space-y-4">
           <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-500/80 flex items-center gap-2"><Terminal className="w-3 h-3"/> Technical Arsenal</h3>
           <Label className="text-neutral-300 text-sm">Select Your Top Skills</Label>
-          <div className="flex flex-wrap gap-2 max-h-[160px] overflow-y-auto p-3 border border-neutral-800/80 rounded-xl bg-neutral-950/50 shadow-inner">
-            {SKILLS_POOL.slice(0, 20).map(sk => (
+          <div className="flex flex-wrap gap-2 max-h-[160px] overflow-y-auto p-3 border border-neutral-800/80 rounded-xl bg-neutral-950/50 shadow-inner custom-scrollbar">
+            {SKILLS_POOL.map(sk => (
               <Badge 
                 key={sk} 
                 variant={selectedSkills.includes(sk) ? "default" : "outline"}
@@ -142,15 +142,22 @@ export default function SkillooHome() {
           </div>
 
           {selectedSkills.length > 0 && (
-            <div className="space-y-3 p-4 border border-indigo-500/20 rounded-xl bg-indigo-950/10">
-              <Label className="text-indigo-300 text-xs uppercase flex items-center gap-1"><SlidersHorizontal className="w-3 h-3" /> Adjust Proficiency</Label>
+            <motion.div 
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              className="space-y-4 p-5 border border-indigo-500/30 rounded-2xl bg-indigo-950/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] backdrop-blur-sm"
+            >
+              <Label className="text-indigo-400 text-xs font-black uppercase tracking-widest flex items-center gap-2 mb-2"><SlidersHorizontal className="w-3.5 h-3.5" /> Adjust Proficiency</Label>
               {selectedSkills.map(sk => (
-                <div key={sk} className="space-y-1">
-                  <div className="flex justify-between text-xs"><span className="text-neutral-300">{sk}</span><span className="text-neutral-500 font-mono">Lvl {skillProficiency[sk] || 3}</span></div>
+                <div key={sk} className="space-y-2 group">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-neutral-200 font-medium group-hover:text-indigo-300 transition-colors">{sk}</span>
+                    <span className="text-[10px] bg-indigo-500/20 text-indigo-400 px-1.5 py-0.5 rounded font-mono border border-indigo-500/20">Lvl {skillProficiency[sk] || 3}</span>
+                  </div>
                   <Slider min={1} max={5} step={1} value={[skillProficiency[sk] || 3]} onValueChange={(val) => setSkillProficiency({...skillProficiency, [sk]: val[0]})} className="cursor-pointer" />
                 </div>
               ))}
-            </div>
+            </motion.div>
           )}
         </div>
 
@@ -199,8 +206,8 @@ export default function SkillooHome() {
       </motion.div>
 
       {/* Main Content Area */}
-      <div className="flex-1 p-8 md:p-14 overflow-y-auto bg-[url('https://grainy-gradients.vercel.app/noise.svg')] relative">
-        <div className="absolute inset-0 bg-neutral-950 opacity-95 -z-10 mix-blend-multiply"></div>
+      <div className="flex-1 p-8 md:p-14 overflow-y-auto bg-[url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E')] relative isolate">
+        <div className="absolute inset-0 bg-neutral-950 opacity-[0.97] -z-10"></div>
         
         <div className="w-full max-w-6xl mx-auto">
           {!loading && projects.length === 0 && (
