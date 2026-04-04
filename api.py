@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -9,9 +11,15 @@ from src.llm_generator import GeminiGenerator
 
 app = FastAPI(title="Projexis Recommendation API")
 
+allowed_origins = [
+    origin.strip()
+    for origin in os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+    if origin.strip()
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -37,6 +45,16 @@ class UserProfile(BaseModel):
     subjects: List[str]
     interests: List[str]
 
+
+def build_fallback_project_details(project_row, missing_skills):
+    skill_text = ", ".join(missing_skills) if missing_skills else "all of the required technical skills"
+    return {
+        "title": project_row.get("title", "Recommended Project"),
+        "description": project_row.get("description", "A practical project aligned to your profile."),
+        "explanation": f"This project is a strong fit because it matches your current background and highlights {skill_text}.",
+        "narrative_plan": "Project details are available, but AI narration is currently unavailable. The project can still be started using the recommended stack and gap analysis provided.",
+    }
+
 @app.get("/")
 def read_root():
     return {"message": "Projexis API is running. Endpoints at /api/recommend."}
@@ -50,7 +68,7 @@ def get_recommendations(profile: UserProfile):
     if not recommender:
         raise HTTPException(status_code=500, detail="Recommendation models not loaded. Run `python train.py` first.")
 
-    user_input = profile.dict()
+    user_input = profile.model_dump()
 
     recs = recommender.get_recommendations(user_input, top_n=5)
 
@@ -61,10 +79,18 @@ def get_recommendations(profile: UserProfile):
     missing_skills_list = []
 
     for _, row in recs.iterrows():
-        match_pct, missing_skills = explainer.skill_match_analysis(
-            user_input.get('skills', []),
-            row['required_skills']
-        )
+        if explainer:
+            match_pct, missing_skills = explainer.skill_match_analysis(
+                user_input.get('skills', []),
+                row['required_skills']
+            )
+        else:
+            project_skills = set(row.get("required_skills", []))
+            user_skills = set(user_input.get("skills", []))
+            overlap = user_skills.intersection(project_skills)
+            missing_skills = list(project_skills - user_skills)
+            match_pct = round((len(overlap) / len(project_skills)) * 100, 1) if project_skills else 100.0
+
         missing_skills_list.append((match_pct, missing_skills))
 
         tasks.append({
@@ -72,7 +98,10 @@ def get_recommendations(profile: UserProfile):
             "missing_skills": missing_skills
         })
 
-    llm_results = llm.generate_batch_project_details(user_input, tasks)
+    if llm and llm.is_configured():
+        llm_results = llm.generate_batch_project_details(user_input, tasks)
+    else:
+        llm_results = [build_fallback_project_details(task["project_dict"], task["missing_skills"]) for task in tasks]
 
     final_output = []
 
