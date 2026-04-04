@@ -40,6 +40,12 @@
       "regex": "^/_not\\-found(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/api/recommend",
+      "regex": "^/api/recommend(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/recommend(?:/)?$"
     }
   ],
   "dataRoutes": [],

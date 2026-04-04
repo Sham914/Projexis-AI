@@ -56,8 +56,7 @@ export default function ProjexisHome() {
     setProjects([]);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-      const res = await fetch(`${apiUrl}/api/recommend`, {
+      const res = await fetch("/api/recommend", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -70,6 +69,11 @@ export default function ProjexisHome() {
           interests: selectedInterests
         })
       });
+
+      if (!res.ok) {
+        throw new Error(`Request failed with status ${res.status}`);
+      }
+
       const data = await res.json();
       setProjects(data.projects || []);
     } catch (e) {
