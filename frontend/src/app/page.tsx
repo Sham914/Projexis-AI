@@ -269,11 +269,10 @@ export default function ProjexisHome() {
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 className="flex flex-col items-center justify-center h-[50vh] gap-4"
               >
-                <div className="relative w-16 h-16">
-                  <div className="absolute inset-0 border-t-2 border-indigo-500 rounded-full animate-spin"></div>
-                  <div className="absolute inset-2 border-r-2 border-cyan-400 rounded-full animate-[spin_2s_linear_infinite_reverse]"></div>
+                <div className="rounded-full border border-indigo-500/30 bg-indigo-500/10 p-4 shadow-[0_0_26px_rgba(79,70,229,0.28)]">
+                  <Loader2 className="w-10 h-10 animate-spin text-indigo-300" />
                 </div>
-                <p className="text-indigo-400 font-mono text-sm tracking-widest uppercase animate-pulse">Running Neural Inference...</p>
+                <p className="text-indigo-300 font-mono text-sm tracking-widest uppercase animate-pulse">Running Neural Inference...</p>
               </motion.div>
             )}
 
