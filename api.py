@@ -5,9 +5,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict
 
-from src.recommender import RecommenderSystem
-from src.explainer import ExplanationEngine
-from src.llm_generator import GeminiGenerator
+startup_error = None
+
+try:
+    from src.recommender import RecommenderSystem
+    from src.explainer import ExplanationEngine
+    from src.llm_generator import GeminiGenerator
+except Exception as e:
+    RecommenderSystem = None
+    ExplanationEngine = None
+    GeminiGenerator = None
+    startup_error = f"Import failure: {str(e)}"
 
 app = FastAPI(title="Projexis Recommendation API")
 
@@ -25,15 +33,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-try:
-    recommender = RecommenderSystem()
-    explainer = ExplanationEngine()
-    llm = GeminiGenerator()
-except Exception as e:
-    recommender = None
-    explainer = None
-    llm = None
-    print(f"Warning: Models failed to load upon startup: {str(e)}")
+recommender = None
+explainer = None
+llm = None
+
+if RecommenderSystem and ExplanationEngine and GeminiGenerator:
+    try:
+        recommender = RecommenderSystem()
+        explainer = ExplanationEngine()
+        llm = GeminiGenerator()
+    except Exception as e:
+        startup_error = f"Model init failure: {str(e)}"
+        print(f"Warning: Models failed to load upon startup: {str(e)}")
+elif startup_error:
+    print(f"Warning: {startup_error}")
 
 
 class UserProfile(BaseModel):
@@ -61,7 +74,11 @@ def read_root():
 
 @app.get("/health")
 def health_check():
-    return {"status": "healthy", "models_loaded": recommender is not None}
+    return {
+        "status": "healthy",
+        "models_loaded": recommender is not None,
+        "startup_error": startup_error,
+    }
 
 @app.post("/api/recommend")
 def get_recommendations(profile: UserProfile):
