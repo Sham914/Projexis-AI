@@ -75,20 +75,32 @@ After your backend is live on Railway:
 
 ---
 
-## Step 4: Update Frontend Code (if needed)
+## Step 4: Frontend API Call (Current Behavior)
 
-Your frontend already makes calls to `http://localhost:8000/api/recommend`. In production, it should use the environment variable.
+No code change is needed in `frontend/src/app/page.tsx`.
 
-Check `frontend/src/app/page.tsx` line ~73:
+The frontend already calls a local Next.js route:
 
-**Change from:**
 ```javascript
-const res = await fetch("http://localhost:8000/api/recommend", {
+const res = await fetch("/api/recommend", {
 ```
 
-**To:**
-```javascript
-const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/recommend`, {
+That route (`frontend/src/app/api/recommend/route.ts`) proxies the request to your backend URL using:
+
+- `BACKEND_API_URL` (preferred)
+- fallback: `NEXT_PUBLIC_API_URL`
+- fallback: `http://localhost:8000` (local dev)
+
+For production, set at least one of these env vars in Vercel:
+
+```bash
+BACKEND_API_URL=https://your-backend-railway.up.railway.app
+```
+
+Optional fallback (also works):
+
+```bash
+NEXT_PUBLIC_API_URL=https://your-backend-railway.up.railway.app
 ```
 
 ---
