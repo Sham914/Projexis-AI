@@ -128,13 +128,14 @@ Core interests: {', '.join(interests) if interests else 'None provided'}
 
         project_strings = []
         for i, proj in enumerate(projects_list):
+            required_skills = self._as_list(proj['project_dict'].get('required_skills', []))
             gaps = ', '.join(proj['missing_skills']) if proj['missing_skills'] else 'None — student already has all required skills!'
-            overlap = ', '.join([skill for skill in self._as_list(proj['project_dict'].get('required_skills', [])) if skill in self._as_list(user_dict.get('skills', []))]) or 'None'
+            overlap = ', '.join([skill for skill in required_skills if skill in self._as_list(user_dict.get('skills', []))]) or 'None'
             project_strings.append(f"""
             [PROJECT {i}]
             - Name: {proj['project_dict'].get('title')}
             - Domain: {proj['project_dict'].get('domain')}
-            - Full Required Tech Stack: {', '.join(proj['project_dict'].get('required_skills', []))}
+            - Full Required Tech Stack: {', '.join(required_skills) if required_skills else 'None'}
             - Skills already matched by the student: {overlap}
             - Skills to Bridge (the student does NOT yet have these): {gaps}
             """)
@@ -189,7 +190,7 @@ Core interests: {', '.join(interests) if interests else 'None provided'}
         if not arr or not isinstance(arr, list) or len(arr) != len(projects_list):
             return [{"title": p['project_dict'].get('title'), "description": "Parse Error", "explanation": "Malformed AI Response — please retry.", "narrative_plan": "Retry generation."} for p in projects_list]
 
-        for item in arr:
+        for idx, item in enumerate(arr):
             if 'narrative_plan' in item:
                 if isinstance(item['narrative_plan'], list):
                     item['narrative_plan'] = "\n\n".join([str(s) for s in item['narrative_plan']])
@@ -203,12 +204,14 @@ Core interests: {', '.join(interests) if interests else 'None provided'}
 
             title = str(item.get('title', '')).strip()
             if not title or re.search(r'\bproject\s*\d+\b', title, re.IGNORECASE):
-                item['title'] = self._build_title_from_context(item, user_dict)
+                project_data = projects_list[idx].get('project_dict', {}) if idx < len(projects_list) else {}
+                item['title'] = self._build_title_from_context(item, user_dict, project_data)
 
         return arr
 
-    def _build_title_from_context(self, item, user_dict):
-        domain = str(item.get('domain') or user_dict.get('preferred_domain') or 'Project').strip()
+    def _build_title_from_context(self, item, user_dict, project_data=None):
+        project_data = project_data or {}
+        domain = str(project_data.get('domain') or item.get('domain') or user_dict.get('preferred_domain') or 'Project').strip()
         domain_map = {
             'AI/ML': ('Adaptive', 'Engine'),
             'Web Development': ('Interactive', 'Platform'),
@@ -220,7 +223,7 @@ Core interests: {', '.join(interests) if interests else 'None provided'}
             'IoT': ('Connected', 'Hub'),
         }
         adjective, noun = domain_map.get(domain, ('Adaptive', 'Platform'))
-        required_skills = self._as_list(item.get('required_skills', []))
+        required_skills = self._as_list(project_data.get('required_skills', [])) or self._as_list(item.get('required_skills', []))
         user_skills = self._as_list(user_dict.get('skills', []))
         overlap = [skill for skill in required_skills if skill in user_skills]
 

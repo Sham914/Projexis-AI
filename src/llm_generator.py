@@ -128,8 +128,13 @@ Core interests: {', '.join(interests) if interests else 'None provided'}
 
         project_strings = []
         for i, proj in enumerate(projects_list):
+            user_skills = set(self._as_list(user_dict.get('skills', [])))
+            skill_proficiency = user_dict.get('skill_proficiency', {}) or {}
+            if isinstance(skill_proficiency, dict):
+                user_skills.update(self._as_list(list(skill_proficiency.keys())))
+
             gaps = ', '.join(proj['missing_skills']) if proj['missing_skills'] else 'None — student already has all required skills!'
-            overlap = ', '.join([skill for skill in self._as_list(proj['project_dict'].get('required_skills', [])) if skill in self._as_list(user_dict.get('skills', []))]) or 'None'
+            overlap = ', '.join([skill for skill in self._as_list(proj['project_dict'].get('required_skills', [])) if skill in user_skills]) or 'None'
             project_strings.append(f"""
             [PROJECT {i}]
             - Name: {proj['project_dict'].get('title')}

@@ -19,11 +19,12 @@ TITLE_TEMPLATES = {
 def build_project_title(domain, req_skills):
     adjective, noun = TITLE_TEMPLATES.get(domain, ("Adaptive", "Platform"))
     useful_skills = [skill for skill in req_skills if skill not in {"Python", "Java", "C++", "HTML", "CSS", "SQL", "Git", "Docker"}]
-    focus = useful_skills[0] if useful_skills else (req_skills[0] if req_skills else domain)
+    domain_norm = str(domain).replace("/", "-").strip()
+    focus = useful_skills[0] if useful_skills else domain_norm
     focus = str(focus).replace("/", "-").strip()
     if len(focus.split()) > 3:
         focus = " ".join(focus.split()[:3])
-    if focus and focus.lower() != domain.lower():
+    if focus and focus.lower() != domain_norm.lower():
         return f"{adjective} {focus} {noun}".replace("  ", " ").strip()
     return f"{adjective} {noun}".strip()
 

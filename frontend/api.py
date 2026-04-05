@@ -14,11 +14,12 @@ app = FastAPI(title="Projexis Recommendation API")
 
 allowed_origins = [
     origin.strip()
-    for origin in os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+    for origin in os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000").split(",")
     if origin.strip()
 ]
 
-allowed_origin_regex = os.getenv("ALLOWED_ORIGIN_REGEX", r"^https://.*\.vercel\.app$")
+default_origin_regex = r"^https://projexis(?:-[a-z0-9-]+)?\.vercel\.app$"
+allowed_origin_regex = os.getenv("ALLOWED_ORIGIN_REGEX", default_origin_regex).strip() or None
 
 app.add_middleware(
     CORSMiddleware,
@@ -102,7 +103,9 @@ def _title_needs_rewrite(title):
 def _pick_focus_term(project_row, user_dict):
     project_skills = _as_list(project_row.get("required_skills", []))
     user_skills = _as_list(user_dict.get("skills", []))
-    overlap = [skill for skill in project_skills if skill in user_skills]
+
+    user_skill_lookup = {skill.strip().lower() for skill in user_skills if str(skill).strip()}
+    overlap = [skill for skill in project_skills if str(skill).strip().lower() in user_skill_lookup]
     if overlap:
         return overlap[0]
 

@@ -114,7 +114,9 @@ def _title_needs_rewrite(title):
 def _pick_focus_term(project_row, user_dict):
     project_skills = _as_list(project_row.get("required_skills", []))
     user_skills = _as_list(user_dict.get("skills", []))
-    overlap = [skill for skill in project_skills if skill in user_skills]
+
+    user_skills_lower = {skill.strip().lower() for skill in user_skills if str(skill).strip()}
+    overlap = [skill for skill in project_skills if str(skill).strip().lower() in user_skills_lower]
     if overlap:
         return overlap[0]
 
@@ -235,7 +237,7 @@ def get_recommendations(profile: UserProfile):
     if llm and llm.is_configured():
         llm_results = llm.generate_batch_project_details(user_input, tasks)
     else:
-        llm_results = [build_fallback_project_details(task["project_dict"], task["missing_skills"], user_input) for task in tasks]
+        llm_results = [_build_fallback_project_details(task["project_dict"], task["missing_skills"], user_input) for task in tasks]
 
     final_output = []
 
