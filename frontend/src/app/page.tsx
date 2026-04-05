@@ -242,7 +242,7 @@ export default function ProjexisHome() {
           disabled={loading || selectedSkills.length === 0}
         >
           {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Terminal className="w-5 h-5" />}
-          {loading ? "Aligning Matrices..." : "Generate Curriculum"}
+          {loading ? "Aligning Matrices..." : "Generate Projects"}
         </Button>
       </motion.div>
 

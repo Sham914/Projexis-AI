@@ -3,6 +3,30 @@ import csv
 import random
 import os
 
+
+TITLE_TEMPLATES = {
+    "AI/ML": ("Adaptive", "Engine"),
+    "Web Development": ("Interactive", "Platform"),
+    "DBMS": ("Structured", "System"),
+    "Cybersecurity": ("Secure", "Console"),
+    "Data Science": ("Predictive", "Dashboard"),
+    "Mobile App Dev": ("Smart", "App"),
+    "Cloud Computing": ("Scalable", "Orchestrator"),
+    "IoT": ("Connected", "Hub"),
+}
+
+
+def build_project_title(domain, req_skills):
+    adjective, noun = TITLE_TEMPLATES.get(domain, ("Adaptive", "Platform"))
+    useful_skills = [skill for skill in req_skills if skill not in {"Python", "Java", "C++", "HTML", "CSS", "SQL", "Git", "Docker"}]
+    focus = useful_skills[0] if useful_skills else (req_skills[0] if req_skills else domain)
+    focus = str(focus).replace("/", "-").strip()
+    if len(focus.split()) > 3:
+        focus = " ".join(focus.split()[:3])
+    if focus and focus.lower() != domain.lower():
+        return f"{adjective} {focus} {noun}".replace("  ", " ").strip()
+    return f"{adjective} {noun}".strip()
+
 def generate_projects(num_projects=80):
     domains = ["AI/ML", "Web Development","DBMS", "Cybersecurity", "Data Science", "Mobile App Dev", "Cloud Computing", "IoT"]
     skills_pool = {
@@ -28,15 +52,15 @@ def generate_projects(num_projects=80):
         
         project = {
             "project_id": f"P{i:03d}",
-            "title": f"{domain} Project {i}",
+            "title": build_project_title(domain, req_skills),
             "domain": domain,
             "required_skills": req_skills,
             "difficulty_level": level,
             "estimated_duration": f"{random.randint(2, 12)} weeks",
             "tech_stack": req_skills + ["Git", "Docker"] if random.random() > 0.5 else req_skills,
             "prerequisites": random.sample(domain_skills, k=random.randint(1, 2)),
-            "description": f"A comprehensive {domain} project focusing on expanding your skills in {', '.join(req_skills)}.",
-            "real_world_application": f"Can be used in real-world scenarios for {domain.lower()} businesses.",
+            "description": f"A {domain} project designed around {', '.join(req_skills)} and shaped as a portfolio-ready system rather than a placeholder exercise.",
+            "real_world_application": f"Can be used in real-world scenarios for {domain.lower()} teams that need practical, deployable solutions.",
             "innovation_score": round(random.uniform(0.5, 1.0), 2),
             "industry_relevance_score": round(random.uniform(0.6, 1.0), 2),
             "step_by_step_implementation": [
@@ -46,7 +70,7 @@ def generate_projects(num_projects=80):
                 "4. Testing and Validation",
                 "5. Deployment"
             ],
-            "expected_output": f"A fully functional {domain} application.",
+            "expected_output": f"A fully functional {domain} application with a clear product identity and a realistic execution plan.",
             "future_enhancements": ["Add advanced features", "Improve performance", "Scale architecture"]
         }
         projects.append(project)
