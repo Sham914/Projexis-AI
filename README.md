@@ -58,4 +58,4 @@ Projexis is a machine learning-powered recommendation system that helps students
    npm run dev
    # Runs on http://localhost:3000
    ```
-You can see the [Deployment Docs](./DEPLOYMENT.md).
+You can see the [Deployment Docs Here](./DEPLOYMENT.md).
