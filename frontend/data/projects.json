@@ -3181,5 +3181,200 @@
             "Improve performance",
             "Scale architecture"
         ]
+    },
+    {
+        "project_id": "P081",
+        "title": "Database Query Performance Analyzer",
+        "domain": "DBMS",
+        "required_skills": [
+            "SQL",
+            "Python",
+            "Database Design"
+        ],
+        "difficulty_level": "Intermediate",
+        "estimated_duration": "4 weeks",
+        "tech_stack": [
+            "PostgreSQL",
+            "SQL",
+            "Python",
+            "Pandas"
+        ],
+        "prerequisites": [
+            "SQL",
+            "Normalization"
+        ],
+        "description": "Build a tool that detects slow queries, recommends index strategies, and tracks execution plan changes over time.",
+        "real_world_application": "Useful for database administration teams optimizing OLTP systems.",
+        "innovation_score": 0.79,
+        "industry_relevance_score": 0.94,
+        "step_by_step_implementation": [
+            "1. Collect query logs and execution plans",
+            "2. Build parser for expensive query patterns",
+            "3. Create index recommendation rules",
+            "4. Visualize performance before and after tuning",
+            "5. Validate gains on benchmark workloads"
+        ],
+        "expected_output": "A DBMS dashboard showing slow-query diagnostics and index recommendations.",
+        "future_enhancements": [
+            "Auto-generate migration scripts for indexes",
+            "Add workload-aware recommendation engine",
+            "Support MySQL and SQL Server"
+        ]
+    },
+    {
+        "project_id": "P082",
+        "title": "University Course Registration Database",
+        "domain": "DBMS",
+        "required_skills": [
+            "SQL",
+            "Database Design",
+            "ER Modeling"
+        ],
+        "difficulty_level": "Beginner",
+        "estimated_duration": "3 weeks",
+        "tech_stack": [
+            "MySQL",
+            "SQL",
+            "Draw.io",
+            "Python"
+        ],
+        "prerequisites": [
+            "SQL",
+            "Primary and Foreign Keys"
+        ],
+        "description": "Design and implement a normalized academic database for course registration, faculty assignments, and timetable constraints.",
+        "real_world_application": "Represents real student information system workflows in educational institutions.",
+        "innovation_score": 0.68,
+        "industry_relevance_score": 0.89,
+        "step_by_step_implementation": [
+            "1. Gather entities and relationship constraints",
+            "2. Build ER model and convert to relational schema",
+            "3. Apply normalization up to 3NF",
+            "4. Implement stored procedures for enrollment",
+            "5. Validate integrity with test cases"
+        ],
+        "expected_output": "A functional DBMS schema with sample data and transaction-safe enrollment operations.",
+        "future_enhancements": [
+            "Add role-based access for admin and faculty",
+            "Include waitlist and prerequisite logic",
+            "Expose API for registration portal"
+        ]
+    },
+    {
+        "project_id": "P083",
+        "title": "Inventory Management with Stored Procedures",
+        "domain": "DBMS",
+        "required_skills": [
+            "SQL",
+            "Stored Procedures",
+            "Transactions"
+        ],
+        "difficulty_level": "Intermediate",
+        "estimated_duration": "5 weeks",
+        "tech_stack": [
+            "SQL Server",
+            "T-SQL",
+            "Python",
+            "PowerBI"
+        ],
+        "prerequisites": [
+            "SQL",
+            "Joins"
+        ],
+        "description": "Create a transaction-safe inventory database with stock updates, reorder triggers, and sales analytics.",
+        "real_world_application": "Applicable to retail and warehouse systems requiring strong consistency.",
+        "innovation_score": 0.74,
+        "industry_relevance_score": 0.93,
+        "step_by_step_implementation": [
+            "1. Model products, suppliers, and order flows",
+            "2. Implement transaction-safe stock movement procedures",
+            "3. Add triggers for low-stock and audit logs",
+            "4. Build reporting views for inventory health",
+            "5. Stress test concurrency and rollback behavior"
+        ],
+        "expected_output": "A robust DBMS solution with procedures, triggers, and analytics-ready views.",
+        "future_enhancements": [
+            "Add partitioning for large transaction tables",
+            "Integrate with barcode event streams",
+            "Add forecasting for reorder quantities"
+        ]
+    },
+    {
+        "project_id": "P084",
+        "title": "Healthcare Records Normalization and Security",
+        "domain": "DBMS",
+        "required_skills": [
+            "SQL",
+            "Normalization",
+            "Database Security"
+        ],
+        "difficulty_level": "Advanced",
+        "estimated_duration": "6 weeks",
+        "tech_stack": [
+            "PostgreSQL",
+            "SQL",
+            "pgAdmin",
+            "Python"
+        ],
+        "prerequisites": [
+            "Normalization",
+            "Access Control"
+        ],
+        "description": "Implement a secure medical records schema with role-based access, audit trails, and anonymized reporting views.",
+        "real_world_application": "Mirrors compliance-oriented database design in healthcare systems.",
+        "innovation_score": 0.83,
+        "industry_relevance_score": 0.96,
+        "step_by_step_implementation": [
+            "1. Design patient-centric schema with privacy boundaries",
+            "2. Apply normalization and indexing strategy",
+            "3. Implement role-based access and row-level permissions",
+            "4. Add immutable audit logging for sensitive actions",
+            "5. Build anonymized reporting views"
+        ],
+        "expected_output": "A secure DBMS implementation with normalized schema and auditable access controls.",
+        "future_enhancements": [
+            "Add data masking for non-production copies",
+            "Implement retention and archival policies",
+            "Support federated queries across facilities"
+        ]
+    },
+    {
+        "project_id": "P085",
+        "title": "E-Commerce Recommendation Data Warehouse",
+        "domain": "DBMS",
+        "required_skills": [
+            "SQL",
+            "ETL",
+            "Data Warehousing"
+        ],
+        "difficulty_level": "Advanced",
+        "estimated_duration": "8 weeks",
+        "tech_stack": [
+            "PostgreSQL",
+            "SQL",
+            "Airflow",
+            "Python"
+        ],
+        "prerequisites": [
+            "SQL",
+            "Star Schema"
+        ],
+        "description": "Build a warehouse pipeline for user, product, and order data to support recommendation-ready analytics.",
+        "real_world_application": "Common architecture used by commerce teams for BI and recommendation features.",
+        "innovation_score": 0.85,
+        "industry_relevance_score": 0.97,
+        "step_by_step_implementation": [
+            "1. Define fact and dimension models",
+            "2. Build ETL jobs for incremental loads",
+            "3. Implement data quality checks and reconciliation",
+            "4. Optimize aggregate query performance",
+            "5. Publish curated marts for downstream models"
+        ],
+        "expected_output": "A production-style DBMS warehouse with ETL workflows and analytics marts.",
+        "future_enhancements": [
+            "Add slowly changing dimension handling",
+            "Integrate streaming ingestion",
+            "Add semantic layer for self-service BI"
+        ]
     }
 ]

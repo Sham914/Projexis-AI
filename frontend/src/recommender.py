@@ -10,19 +10,58 @@ class RecommenderSystem:
         self.ml_model = load_model(model_path)
         self.projects_df = load_projects()
 
-    def compute_similarity(self, user_skills, project_skills_list):
-        """Computes pure text/skill cosine similarity."""
-        u_vec = self.preprocessor.get_skill_vector(user_skills)
-        if sum(u_vec) == 0:
+    def _normalize_text(self, value):
+        return str(value).strip().lower()
+
+    def _build_user_skill_vector(self, user_dict):
+        classes = list(self.preprocessor.mlb_skills.classes_)
+        class_index = {self._normalize_text(skill): idx for idx, skill in enumerate(classes)}
+
+        u_vec = np.zeros(len(classes), dtype=float)
+
+        for skill in user_dict.get("skills", []) or []:
+            idx = class_index.get(self._normalize_text(skill))
+            if idx is not None:
+                u_vec[idx] = max(u_vec[idx], 1.0)
+
+        skill_proficiency = user_dict.get("skill_proficiency", {}) or {}
+        if isinstance(skill_proficiency, dict):
+            for skill, raw_level in skill_proficiency.items():
+                idx = class_index.get(self._normalize_text(skill))
+                if idx is None:
+                    continue
+                try:
+                    level = float(raw_level)
+                except Exception:
+                    level = 0.0
+                level = max(0.0, min(5.0, level))
+                weight = max(0.2, level / 5.0)
+                u_vec[idx] = max(u_vec[idx], weight)
+
+        return u_vec
+
+    def compute_similarity(self, user_dict, project_skills_list):
+        """Computes skill cosine similarity using skills + skill proficiency weights."""
+        u_vec = self._build_user_skill_vector(user_dict)
+        if np.sum(u_vec) == 0:
             return np.zeros(len(project_skills_list))
 
-        p_vecs = [self.preprocessor.get_skill_vector(ps) for ps in project_skills_list]
-        similarities = cosine_similarity([u_vec], p_vecs)[0]
+        p_vecs = np.asarray([self.preprocessor.get_skill_vector(ps) for ps in project_skills_list], dtype=float)
+        u_matrix = np.asarray(u_vec, dtype=float).reshape(1, -1)
+        similarities = cosine_similarity(u_matrix, p_vecs)[0]
         return similarities
 
     def apply_rule_filters(self, user_dict, projects_df):
         """Removes projects that are obviously inappropriate."""
         filtered = projects_df.copy()
+
+        preferred_domain = self._normalize_text(user_dict.get("preferred_domain", ""))
+        if preferred_domain:
+            domain_match_df = filtered[
+                filtered["domain"].astype(str).str.strip().str.lower() == preferred_domain
+            ]
+            if len(domain_match_df) > 0:
+                filtered = domain_match_df
 
         user_year = user_dict.get('year', 1)
         if user_year == 1:
@@ -50,7 +89,7 @@ class RecommenderSystem:
         ml_scores = self.ml_model.predict(X_candidates)
 
         project_skills_list = candidate_projects['required_skills'].tolist()
-        base_similarities = self.compute_similarity(user_dict.get('skills', []), project_skills_list)
+        base_similarities = self.compute_similarity(user_dict, project_skills_list)
 
         final_scores = (alpha * base_similarities) + ((1 - alpha) * ml_scores)
 

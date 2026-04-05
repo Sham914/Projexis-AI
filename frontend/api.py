@@ -190,10 +190,18 @@ def get_recommendations(profile: UserProfile):
     missing_skills_list = []
 
     for _, row in recs.iterrows():
-        match_pct, missing_skills = explainer.skill_match_analysis(
-            user_input.get('skills', []),
-            row['required_skills']
-        )
+        if explainer:
+            match_pct, missing_skills = explainer.skill_match_analysis(
+                user_input.get('skills', []),
+                row['required_skills']
+            )
+        else:
+            project_skills = set(row.get("required_skills", []))
+            user_skills = set(user_input.get("skills", []))
+            overlap = user_skills.intersection(project_skills)
+            missing_skills = list(project_skills - user_skills)
+            match_pct = round((len(overlap) / len(project_skills)) * 100, 1) if project_skills else 100.0
+
         missing_skills_list.append((match_pct, missing_skills))
 
         tasks.append({
